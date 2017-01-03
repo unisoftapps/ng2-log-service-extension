@@ -1,0 +1,19 @@
+{
+  "name": "ng2-log-service-extension",
+  "version": "0.0.1",
+  "description": "Chrome extension for ng2-log-service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unisoftapps/ng2-log-service-extension.git"
+  },
+  "author": "unisoftapps",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/unisoftapps/ng2-log-service-extension/issues"
+  },
+  "homepage": "https://github.com/unisoftapps/ng2-log-service-extension#readme"
+}
