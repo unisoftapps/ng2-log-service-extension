@@ -28,7 +28,7 @@
           
             <ul class="right">
               <li>
-                <a href="#modal1">
+                <a onclick="showSettings();">
                   <i class="material-icons">settings</i>
                 </a>
               </li>
@@ -38,7 +38,7 @@
         </nav>
       </div>
 
-      <div id="logs">
+      <div id="logs" v-if="showLogs">
 
         <div v-for="item in logs" class="log-item">
 
@@ -68,14 +68,58 @@
       </div>
     </div>
 
+
+
+
     <!-- Modal Structure -->
-    <div id="modal1" class="modal modal-fixed-footer ">
+    <div v-if="showSettings" id="settings" class="white">
       <div class="modal-content">
         <h4>Configure Monitor</h4>
-        <p>A bunch of text</p>
+        <form action="#">
+          <p>
+            <input checked="checked"  type="checkbox" id="enableLogging" />
+            <label for="enableLogging">Turn On Logging</label>
+          </p>
+          <p>
+            <input checked="checked"  type="checkbox" id="expandJson" />
+            <label for="expandJson">Expand JSON data By Default</label>
+          </p>
+          <p>
+            <input checked="checked" type="checkbox" id="showNamespace" />
+            <label for="showNamespace">Show Namespace</label>
+          </p>
+          <p>
+            <input checked="checked" type="checkbox" id="clearAutomatically" />
+            <label for="clearAutomatically">Clear logs automatically</label>
+          </p>
+          <p>
+            <input checked="checked" type="checkbox" id="showTimestamp" />
+            <label for="showTimestamp">Show Timestamp</label>
+          </p>
+          <p>
+            <input checked="checked" type="checkbox" id="autoScroll" />
+            <label for="autoScroll">Autoscroll to latest log</label>
+          </p>
+          <p>
+            <input type="checkbox" id="prependLogs" />
+            <label for="prependLogs">Prepend logs</label>
+          </p>
+          <h5>Log Level</h5>
+          <p>Only show this level and above.</p>
+          <div class="input-field col s12">
+            <select>
+              <option v-for="item in logLevels" value="item.value">{{item.label}}</option>
+            </select>
+          </div>
+          <h5>Maximum Amount of Logs</h5>
+          <p>How many logs to show before being removed</p>
+          <p class="range-field">
+            <input value="20" step="5" type="range" id="test5" min="5" max="100" />
+          </p>
+        </form>
       </div>
       <div class="modal-footer">
-        <a href="#!" class="modal-action modal-close waves-effect waves-green btn light-blue darken-4 ">Save</a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-green-lighten-1 btn green ">Save</a>
       </div>
     </div>
 
