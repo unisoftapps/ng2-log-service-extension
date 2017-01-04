@@ -1,0 +1,48 @@
+/* lighter #002b36 */
+/* lighter #073642 */
+
+body {
+    font-family: roboto;
+    font-size:1.2rem;
+    background:#073642;
+}
+
+/*#vue h1 {
+    font-size:1.2rem;
+    padding:10px 20px;
+    border-bottom: solid 1px #eee;
+}*/
+
+nav {
+    background-color:#002b36;
+}
+
+.chip {
+    background-color: #002b36;
+    color:#fff;
+    height:25px;
+    line-height: 25px;
+}
+
+
+#logs {
+    color:#fff;    
+}
+
+.log-item .row {
+    margin-bottom:0;
+}
+
+.log-item {
+    border-bottom: solid 1px #eee;
+    padding:10px;
+}
+
+.log-item .date {
+    font-size:0.9rem;
+    color:#ff9800;
+}
+
+.log-item pre {
+    font-size:0.85rem;
+}

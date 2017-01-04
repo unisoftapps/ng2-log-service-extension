@@ -1,15 +1,54 @@
-console.log('log viewere js here!');
 
-var logs = [];
 
-logs.push({
-    message: 'Test message',
-    object: {
-        test: [1,2,3]
-    }
-})
+$(document).ready(function(){
+    $('.collapsible').collapsible();
+    $('.modal').modal();
+  });
 
 function addLog(log) {
-    console.log('Adding log!', log);
-    logs.push(log);
+    log.date = moment().format();
+    vue.logs.push(log);
+    setTimeout(function() {
+        hljs.initHighlighting.called = false;
+        hljs.initHighlighting();
+        //window.scrollTo(0,document.body.scrollHeight);
+    }, 0);
 }
+
+var vue = new Vue({
+    el: '#vue',
+    data: {
+        logs: [],
+        title: 'ng2-log-service monitor'
+    }
+});
+
+addLog({
+    message: 'Test message 1',
+    type: 'All',
+    data: {
+        title: 'Monitor',
+        test: [1,2,3],
+        type: 'All'
+    }
+});
+
+addLog({
+    message: 'Test message 2',
+    type: 'Landing Page',
+    data: {
+        title: 'Monitor',
+        test: [1,2,3]   
+    }
+});
+
+
+// setInterval(function() {
+//     addLog({
+//         message: 'New message',
+//         data: {
+//             hello: 'world'
+//         },
+//         type: 'Other'
+//     })
+// }, 1000);
