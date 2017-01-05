@@ -21,8 +21,8 @@ chrome.runtime.onConnect.addListener(function(port) {
     });
     port.onMessage.addListener(function(msg) {
         // Received message from devtools. Do something:
-        console.log('got message inside background.js!', msg);
-        notifyDevtools(msg);
+        console.log('got message inside background.js!', msg.event);
+        notifyDevtools(msg.event);
     });
 });
 // Function to send a message to all devtools.html views:

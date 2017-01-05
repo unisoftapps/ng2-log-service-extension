@@ -1,16 +1,21 @@
 console.info('monitoring...');
 
 
+window.addEventListener('logMonitorEvent', function(e) {
+
+    console.log('got it!', e);
+    var port = chrome.runtime.connect({name: 'ng2-log-service-monitor'});
+    port.postMessage({
+        type: 'logMonitorEvent',
+        event: e.detail
+    });
+});
+
+
 window.addEventListener('debugLauncher', function(e) {
 
     var port = chrome.runtime.connect({name: 'ng2-log-service-monitor'});
-    port.postMessage({
-        type: 'debugLauncher',
-        message: e.detail,
-        object: null
-    });
-
-    
+    port.postMessage(e.detail);
 
     console.log(e);
 });

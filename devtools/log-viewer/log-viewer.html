@@ -28,7 +28,7 @@
           
             <ul class="right">
               <li>
-                <a onclick="showSettings();">
+                <a id="show-settings">
                   <i class="material-icons">settings</i>
                 </a>
               </li>
@@ -60,7 +60,7 @@
             </div>
             <div class="col s12">
               <div class="chip">
-                {{item.type}}
+                {{item.namespace}}
               </div>
             </div>
           </div>
@@ -107,14 +107,12 @@
           <p>Log Level</p>
           <p class="subtext">Only show the this level and above.</p>
           <div class="input-field col s12">
-
-            <select onchange="changedLogLevel(this);" v-model="selectedLogLevel">
-              <option v-for="option in logLevels" v-bind:value="option.value">{{ option.text }}</option>
-            </select>
-
-            <!--<select id="logLevel">
-              <option selected="{{item.active === true }}" v-for="item in logLevels" value="item.value">{{item.text}}</option>
-            </select>-->
+            <div class="row">
+              <div class="col s6 m3" v-for="option in logLevels">
+                <input v-model="selectedLogLevel" :value="option.value" name="loglevel" type="radio" :id="option.text" />
+                <label :for="option.text">{{option.text}}</label>
+              </div>
+            </div>
           </div>
           <p>Maximum Amount of Logs</p>
           <p class="subtext">How many logs to show before being removed.</p>
@@ -123,7 +121,7 @@
             <input v-model="maxLogs" step="5" type="range" id="test5" min="5" max="100" />
           </p>
         </form>
-        <button onclick="saveSettings();" class="modal-action modal-close waves-effect waves-green-lighten-1 btn green ">Save</button>
+        <button id="btn-save" class="modal-action modal-close waves-effect waves-green-lighten-1 btn green ">Save</button>
       </div>
     </div>
 

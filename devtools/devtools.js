@@ -25,6 +25,19 @@ chrome.devtools.panels.create('Monitor',
 
         panel.onShown.addListener(function tmp(panelWindow) {
             console.log('onShown');
+
+            try {
+                // grab the store settings from chrome.storage
+                chrome.storage.sync.get('ng2-log-service-monitor-settings', function(data) {
+
+                    console.log(data);
+                    _window.restoreSettings(data['ng2-log-service-monitor-settings']);
+
+                });
+            }
+            catch(e) {
+                console.error(e);
+            }
             
             panel.onShown.removeListener(tmp); // Run once only
             _window = panelWindow;

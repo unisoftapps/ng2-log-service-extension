@@ -1,10 +1,10 @@
-
-
 $(document).ready(function(){
-    $('.collapsible').collapsible();
-    $('.modal').modal();
-    $('select').material_select();
-  });
+    //$('.collapsible').collapsible();
+});
+
+  $('body').on('click', '#show-settings', showSettings);
+  $('body').on('click', '#btn-save', saveSettings);
+  $('body').on('change', '#log-level-box', changedLogLevel);
 
 
 var dateFormats = [
@@ -23,6 +23,9 @@ var dateFormats = [
 ]
 
 function addLog(log) {
+
+    console.log('ADD_LOG FUNC CALLED', log);
+
     log.date = moment().format(dateFormats[0].format);
     vue.logs.push(log);
     setTimeout(function() {
@@ -31,12 +34,6 @@ function addLog(log) {
         //window.scrollTo(0,document.body.scrollHeight);
     }, 0);
 }
-// All = 1,
-//   Debug = 2,
-//   Info = 3,
-//   Warn = 4,
-//   Error = 5,
-//   Fatal = 6
 
 var levels = [
     {
@@ -78,7 +75,7 @@ var vue = new Vue({
     data: {
         logs: [],
         title: 'ng2-log-service monitor',
-        showLogs: false
+        showLogs: true
     }
 });
 
@@ -86,17 +83,20 @@ var vue = new Vue({
 
 addLog({
     message: 'Test message 1',
-    type: 'All',
+    namespace: 'All',
     data: {
         title: 'Monitor',
         test: [1,2,3],
-        type: 'All'
+        nested: {
+            asdfasdf: 'adsfasdf',
+            test: [2,3, 'as']
+        }
     }
 });
 
 addLog({
     message: 'Test message 2',
-    type: 'Landing Page',
+    namespace: 'Landing Page',
     data: {
         title: 'Monitor',
         test: [1,2,3]   
@@ -118,7 +118,7 @@ var settings = new Vue({
     el: '#settings',
     data: {
         logLevels: levels,
-        showSettings: true,
+        showSettings: false,
         enableLogging: true,
         expandJson: true,
         showNamespace: true,
@@ -133,10 +133,11 @@ var settings = new Vue({
 
 function changedLogLevel(e) {
     settings.selectedLogLevel = parseInt(e.value);
+    console.log('here');
 }
 
 function showSettings() {
-    console.log('show settings called');
+    //console.log('show settings called');
     vue.showLogs = !vue.showLogs;
     settings.showSettings = !settings.showSettings
     if(vue.showLogs) {
@@ -144,6 +145,25 @@ function showSettings() {
             hljs.initHighlighting.called = false;
             hljs.initHighlighting();
         }, 0);
+    }
+}
+
+function restoreSettings(data) {
+    try {
+        console.log('trying to restore settings');
+        settings.enableLogging = data.enableLogging;
+        settings.expandJson = data.expandJson;
+        settings.showNamespace = data.showNamespace;
+        settings.clearLogsAutomatically = data.clearLogsAutomatically;
+        settings.showTimestamp = data.showTimestamp;
+        settings.autoscrollToLatestLog = data.autoscrollToLatestLog;
+        settings.prependLogs = data.prependLogs;
+        settings.selectedLogLevel = data.selectedLogLevel;
+        settings.maxLogs = data.maxLogs;
+        console.log('restored!');
+    }
+    catch(e) {
+        console.error(e);
     }
 }
 
@@ -161,11 +181,16 @@ function saveSettings() {
         maxLogs: parseInt(settings.maxLogs)
     };
 
-    chrome.storage.sync.set({
-        'ng2-log-service-monitor-settings': model
-    }, function() {
-        console.log('saved!');
-    });
-
+    try {
+        chrome.storage.sync.set({
+            'ng2-log-service-monitor-settings': model
+        }, function() {
+            console.log('saved!');
+            showSettings();
+        });
+    }
+    catch(e) {
+        console.error(e);
+    }
     console.log('saved settings', model);
 }
