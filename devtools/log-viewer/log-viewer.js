@@ -1,11 +1,21 @@
-$(document).ready(function(){
+var INTERVAL = 2000;
+
+var state = {
+    firstTime: true,
+    scrollbarAtBottom: false
+};
+
+$(document).ready(function() {
     //$('.collapsible').collapsible();
 });
 
-  $('body').on('click', '#show-settings', showSettings);
-  $('body').on('click', '#btn-save', saveSettings);
-  $('body').on('change', '#log-level-box', changedLogLevel);
-
+$('body').on('click', '#show-settings', showSettings);
+$('body').on('click', '#btn-save', saveSettings);
+$('body').on('change', '#log-level-box', changedLogLevel);
+$('body').on('click', '#clear-logs', function() {
+    vue.logs = [];
+    state.firstTime = true;
+});
 
 var dateFormats = [
     {
@@ -24,14 +34,45 @@ var dateFormats = [
 
 function addLog(log) {
 
-    console.log('ADD_LOG FUNC CALLED', log);
+    //console.log('ADD_LOG FUNC CALLED', log);
 
     log.date = moment().format(dateFormats[0].format);
-    vue.logs.push(log);
+    log.levelLabel = levels.filter(function(l) {
+        return (l.text === log.level || l.value === log.level)
+    })[0];
+
+    if(!log.levelLabel) {
+        log.levelLabel = levels[0];
+    }
+
+    // prepend log or append them
+    if(settings.prependLogs) {
+        vue.logs.unshift(log);
+    }
+    else {
+        vue.logs.push(log);
+    }
+
     setTimeout(function() {
-        hljs.initHighlighting.called = false;
-        hljs.initHighlighting();
-        //window.scrollTo(0,document.body.scrollHeight);
+
+        $('code').each(function(i, block) {
+            if(!$(block).hasClass('hljs')) {
+                hljs.highlightBlock(block);
+            }
+        });
+
+        if(!settings.prependLogs) {
+            if($('#logs').height() > $(window).height() && state.firstTime) {
+            //console.log('YES');
+            state.firstTime = false;
+            window.scrollTo(0,document.body.scrollHeight);            
+        }
+
+            if(state.scrollbarAtBottom) {
+                window.scrollTo(0,document.body.scrollHeight);
+            }
+        }
+
     }, 0);
 }
 
@@ -63,27 +104,36 @@ var levels = [
     }
 ];
 
-All = 1,
-  Debug = 2,
-  Info = 3,
-  Warn = 4,
-  Error = 5,
-  Fatal = 6
-
 var vue = new Vue({
     el: '#vue',
     data: {
         logs: [],
-        title: 'ng2-log-service monitor',
+        title: 'monitor',
         showLogs: true
     }
 });
 
-
+var settings = new Vue({
+    el: '#settings',
+    data: {
+        logLevels: levels,
+        showSettings: false,
+        enableLogging: true,
+        expandJson: true,
+        showNamespace: true,
+        clearLogsAutomatically: true,
+        showTimestamp: true,
+        autoscrollToLatestLog: true,
+        prependLogs: true,
+        selectedLogLevel: 1,
+        maxLogs: 40
+    }
+});
 
 addLog({
     message: 'Test message 1',
     namespace: 'All',
+    level: 1,
     data: {
         title: 'Monitor',
         test: [1,2,3],
@@ -97,39 +147,70 @@ addLog({
 addLog({
     message: 'Test message 2',
     namespace: 'Landing Page',
-    data: {
-        title: 'Monitor',
-        test: [1,2,3]   
-    }
+    level: 2
+});
+
+addLog({
+    message: 'Test message 2',
+    namespace: 'Landing Page',
+    level: 3
+});
+
+addLog({
+    message: 'Test message 2',
+    namespace: 'Landing Page',
+    level: 4
+});
+
+addLog({
+    message: 'Test message 2',
+    namespace: 'Landing Page',
+    level: 5
 });
 
 
-// setInterval(function() {
-//     addLog({
-//         message: 'New message',
-//         data: {
-//             hello: 'world'
-//         },
-//         type: 'Other'
-//     })
-// }, 3000);
+addLog({
+    message: 'O Crap',
+    namespace: 'Landing Page',
+    level: 6
+});
 
-var settings = new Vue({
-    el: '#settings',
-    data: {
-        logLevels: levels,
-        showSettings: false,
-        enableLogging: true,
-        expandJson: true,
-        showNamespace: true,
-        clearLogsAutomatically: true,
-        showTimestamp: true,
-        autoscrollToLatestLog: true,
-        prependLogs: false,
-        selectedLogLevel: 4,
-        maxLogs: 40
-    }
-})
+// addLog({
+//     message: 'Test message 2',
+//     namespace: 'Landing Page',
+//     data: {
+//         title: 'Monitor',
+//         test: [1,2,3]   
+//     }
+// });
+
+// addLog({
+//     message: 'Test message 2',
+//     namespace: 'Landing Page',
+//     data: {
+//         title: 'Monitor',
+//         test: [1,2,3]   
+//     }
+// });
+
+
+setInterval(function() {
+    addLog({
+        level: 2,
+        message: 'A crazy message right here',
+        data: {
+            hello: 'world',
+            test: 234234234,
+            a: null,
+            b: {
+                c: []
+            }
+        },
+        namespace: 'Some:Cool:Namespace'
+    })
+}, INTERVAL);
+
+
 
 function changedLogLevel(e) {
     settings.selectedLogLevel = parseInt(e.value);
@@ -194,3 +275,15 @@ function saveSettings() {
     }
     console.log('saved settings', model);
 }
+
+
+$(window).scroll(function() {
+   if($(window).scrollTop() + $(window).height() == $(document).height()) {
+       //alert("bottom!");
+       state.scrollbarAtBottom = true;
+   }
+   else {
+       state.scrollbarAtBottom = false;       
+   }
+   //console.log(state.scrollbarAtBottom);
+});

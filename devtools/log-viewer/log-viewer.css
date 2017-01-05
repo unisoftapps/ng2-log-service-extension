@@ -15,6 +15,46 @@ body {
 
 nav {
     background-color:#002b36;
+    height: 40px;
+    line-height: 40px;
+}
+
+
+nav .brand-logo {
+    font-size: 1.1rem;
+}
+
+@media only screen and (min-width: 1000px) {
+    nav .brand-logo {
+        margin-left:20px;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .log-item .right-align {
+        text-align:left;
+    }
+}
+
+
+nav ul {
+    line-height: 40px;
+    height:40px;
+}
+
+nav ul li {
+    line-height: 40px;
+    height:40px;
+}
+
+nav .nav-wrapper i {
+    line-height: 40px;
+    height:40px;
+}
+
+.navbar-fixed {
+    height: 40px;
+    line-height: 40px;
 }
 
 .chip {
@@ -24,9 +64,13 @@ nav {
     line-height: 25px;
 }
 
+.chips-wrap {
+    margin-top:2px;
+}
+
 
 #logs {
-    color:#fff;    
+    color:#fff;
 }
 
 .log-item .row {
@@ -48,7 +92,7 @@ nav {
 }
 
 #settings {
-    padding:20px;
+    padding:0 20px 20px 20px;
     color:#fff;
 }
 
@@ -68,4 +112,23 @@ nav {
 
 .select-wrapper span.caret {
     color:#fff;
+}
+
+.All {
+    background-color: #616161 ;
+}
+.Debug {
+    background-color: #4db6ac ;   
+}
+.Info {
+    background-color: #2196f3 ;   
+}
+.Warn {
+    background-color: #ff9800;   
+}
+.Error {
+    background-color: #e53935  ;   
+}
+.Fatal {
+    background-color: #b71c1c ;   
 }

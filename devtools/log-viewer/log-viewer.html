@@ -27,9 +27,15 @@
             <a class="brand-logo">{{title}}</a>
           
             <ul class="right">
+              <!--<li><a><span class="badge">4</span></a></li>-->
+              <li>
+                <a id="clear-logs">
+                  <i class="material-icons left">not_interested</i>
+                </a>
+              </li>
               <li>
                 <a id="show-settings">
-                  <i class="material-icons">settings</i>
+                  <i class="material-icons left">settings</i>
                 </a>
               </li>
             </ul>
@@ -54,16 +60,25 @@
             </div>
           </div>
 
-          <div class="row code-wrap">
+          <div v-if="item.data" class="row code-wrap">
             <div class="col s12">
               <pre><code class="json">{{item.data}}</code></pre>
             </div>
-            <div class="col s12">
+          </div>
+
+          <div class="row chips-wrap">
+            <div class="col s12 m6 truncate">
               <div class="chip">
                 {{item.namespace}}
               </div>
+
+              <div class="chip" :class="item.levelLabel.text">
+                {{item.levelLabel.text}}
+              </div>
+
             </div>
           </div>
+
         </div>
       </div>
     </div>
@@ -76,10 +91,6 @@
       <div class="modal-content">
         <!--<h4>Configure Monitor</h4>-->
         <form>
-          <p>
-            <input v-model="enableLogging" type="checkbox" id="enableLogging" />
-            <label for="enableLogging">Turn On Logging</label>
-          </p>
           <p>
             <input v-model="expandJson"  type="checkbox" id="expandJson" />
             <label for="expandJson">Expand JSON data By Default</label>
