@@ -40,27 +40,28 @@ function addLog(log) {
 
 var levels = [
     {
-        label: 'All',
+        text: 'All',
         value: 1
     },
     {
-        label: 'Debug',
-        value: 2
+        text: 'Debug',
+        value: 2,
+        active: true
     },
     {
-        label: 'Info',
+        text: 'Info',
         value: 3
     },
     {
-        label: 'Warn',
+        text: 'Warn',
         value: 4
     },
     {
-        label: 'Error',
+        text: 'Error',
         value: 5
     },
     {
-        label: 'Fatal',
+        text: 'Fatal',
         value: 6
     }
 ];
@@ -77,17 +78,11 @@ var vue = new Vue({
     data: {
         logs: [],
         title: 'ng2-log-service monitor',
-        showLogs: true
+        showLogs: false
     }
 });
 
-var settings = new Vue({
-    el: '#settings',
-    data: {
-        logLevels: levels,
-        showSettings: false
-    }
-})
+
 
 addLog({
     message: 'Test message 1',
@@ -119,6 +114,27 @@ addLog({
 //     })
 // }, 3000);
 
+var settings = new Vue({
+    el: '#settings',
+    data: {
+        logLevels: levels,
+        showSettings: true,
+        enableLogging: true,
+        expandJson: true,
+        showNamespace: true,
+        clearLogsAutomatically: true,
+        showTimestamp: true,
+        autoscrollToLatestLog: true,
+        prependLogs: false,
+        selectedLogLevel: 4,
+        maxLogs: 40
+    }
+})
+
+function changedLogLevel(e) {
+    settings.selectedLogLevel = parseInt(e.value);
+}
+
 function showSettings() {
     console.log('show settings called');
     vue.showLogs = !vue.showLogs;
@@ -129,4 +145,27 @@ function showSettings() {
             hljs.initHighlighting();
         }, 0);
     }
+}
+
+function saveSettings() {
+
+    var model = {
+        enableLogging: settings.enableLogging,
+        expandJson: settings.expandJson,
+        showNamespace: settings.showNamespace,
+        clearLogsAutomatically: settings.clearLogsAutomatically,
+        showTimestamp: settings.showTimestamp,
+        autoscrollToLatestLog: settings.autoscrollToLatestLog,
+        prependLogs: settings.prependLogs,
+        selectedLogLevel: settings.selectedLogLevel,
+        maxLogs: parseInt(settings.maxLogs)
+    };
+
+    chrome.storage.sync.set({
+        'ng2-log-service-monitor-settings': model
+    }, function() {
+        console.log('saved!');
+    });
+
+    console.log('saved settings', model);
 }

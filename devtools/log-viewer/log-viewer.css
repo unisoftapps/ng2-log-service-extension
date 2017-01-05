@@ -46,3 +46,26 @@ nav {
 .log-item pre {
     font-size:0.85rem;
 }
+
+#settings {
+    padding:20px;
+    color:#fff;
+}
+
+#settings label {
+    color:#fff;
+}
+
+#settings .subtext {
+    color:#ddd;
+    font-size:0.95rem;
+    /*font-style: italic;*/
+}
+
+#settings .select-wrapper input.select-dropdown {
+    border-bottom-color: #fff;
+}
+
+.select-wrapper span.caret {
+    color:#fff;
+}
