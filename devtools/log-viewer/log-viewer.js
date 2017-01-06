@@ -1,214 +1,50 @@
-var INTERVAL = 2000;
-
-var state = {
-    firstTime: true,
-    scrollbarAtBottom: false
-};
-
 $(document).ready(function() {
-    //$('.collapsible').collapsible();
+    $(".dropdown-button").dropdown();
 });
 
 $('body').on('click', '#show-settings', showSettings);
 $('body').on('click', '#btn-save', saveSettings);
 $('body').on('change', '#log-level-box', changedLogLevel);
 $('body').on('click', '#clear-logs', function() {
-    vue.logs = [];
-    state.firstTime = true;
+    sharedState.logs = [];
+    sharedState.firstTime = true;
+});
+$('body').on('click', '.selectable-level', function(e) {
+    var value = parseInt($(e.currentTarget).attr('data-value'));
+    sharedState.settings.selectedLogLevel = value;
 });
 
-var dateFormats = [
-    {
-        format: 'MMMM Do YYYY, h:mm:ss a',
-        label: 'January 4th 2017, 4:00:32 pm'
-    },
-    {
-        format: null,
-        label: '2017-01-04T16:08:48-05:00'
-    },
-    {
-        format: 'relative',
-        label: 'a few moments ago'
-    }
-]
-
-function addLog(log) {
-
-    //console.log('ADD_LOG FUNC CALLED', log);
-
-    log.date = moment().format(dateFormats[0].format);
-    log.levelLabel = levels.filter(function(l) {
-        return (l.text === log.level || l.value === log.level)
-    })[0];
-
-    if(!log.levelLabel) {
-        log.levelLabel = levels[0];
-    }
-
-    // prepend log or append them
-    if(settings.prependLogs) {
-        vue.logs.unshift(log);
-    }
-    else {
-        vue.logs.push(log);
-    }
-
-    setTimeout(function() {
-
-        $('code').each(function(i, block) {
-            if(!$(block).hasClass('hljs')) {
-                hljs.highlightBlock(block);
-            }
-        });
-
-        if(!settings.prependLogs) {
-            if($('#logs').height() > $(window).height() && state.firstTime) {
-            //console.log('YES');
-            state.firstTime = false;
-            window.scrollTo(0,document.body.scrollHeight);            
-        }
-
-            if(state.scrollbarAtBottom) {
-                window.scrollTo(0,document.body.scrollHeight);
-            }
-        }
-
-    }, 0);
-}
-
-var levels = [
-    {
-        text: 'All',
-        value: 1
-    },
-    {
-        text: 'Debug',
-        value: 2,
-        active: true
-    },
-    {
-        text: 'Info',
-        value: 3
-    },
-    {
-        text: 'Warn',
-        value: 4
-    },
-    {
-        text: 'Error',
-        value: 5
-    },
-    {
-        text: 'Fatal',
-        value: 6
-    }
-];
 
 var vue = new Vue({
     el: '#vue',
     data: {
-        logs: [],
-        title: 'monitor',
-        showLogs: true
+        sharedState: sharedState,
+        title: 'monitor'
+    },
+    computed: {
+        filteredLogs: function() {
+            return sharedState.filteredLogs();
+        },
+        activeLogLevel: function() {
+
+            var match = sharedState.logLevels.filter(function(level) {
+                return level.value === sharedState.settings.selectedLogLevel;
+            })[0];
+
+            return match;
+        }
     }
 });
 
 var settings = new Vue({
     el: '#settings',
     data: {
-        logLevels: levels,
-        showSettings: false,
-        enableLogging: true,
-        expandJson: true,
-        showNamespace: true,
-        clearLogsAutomatically: true,
-        showTimestamp: true,
-        autoscrollToLatestLog: true,
-        prependLogs: true,
-        selectedLogLevel: 1,
-        maxLogs: 40
+        sharedState: sharedState
     }
 });
 
-addLog({
-    message: 'Test message 1',
-    namespace: 'All',
-    level: 1,
-    data: {
-        title: 'Monitor',
-        test: [1,2,3],
-        nested: {
-            asdfasdf: 'adsfasdf',
-            test: [2,3, 'as']
-        }
-    }
-});
-
-addLog({
-    message: 'Test message 2',
-    namespace: 'Landing Page',
-    level: 2
-});
-
-addLog({
-    message: 'Test message 2',
-    namespace: 'Landing Page',
-    level: 3
-});
-
-addLog({
-    message: 'Test message 2',
-    namespace: 'Landing Page',
-    level: 4
-});
-
-addLog({
-    message: 'Test message 2',
-    namespace: 'Landing Page',
-    level: 5
-});
 
 
-addLog({
-    message: 'O Crap',
-    namespace: 'Landing Page',
-    level: 6
-});
-
-// addLog({
-//     message: 'Test message 2',
-//     namespace: 'Landing Page',
-//     data: {
-//         title: 'Monitor',
-//         test: [1,2,3]   
-//     }
-// });
-
-// addLog({
-//     message: 'Test message 2',
-//     namespace: 'Landing Page',
-//     data: {
-//         title: 'Monitor',
-//         test: [1,2,3]   
-//     }
-// });
-
-
-setInterval(function() {
-    addLog({
-        level: 2,
-        message: 'A crazy message right here',
-        data: {
-            hello: 'world',
-            test: 234234234,
-            a: null,
-            b: {
-                c: []
-            }
-        },
-        namespace: 'Some:Cool:Namespace'
-    })
-}, INTERVAL);
 
 
 
@@ -218,15 +54,7 @@ function changedLogLevel(e) {
 }
 
 function showSettings() {
-    //console.log('show settings called');
-    vue.showLogs = !vue.showLogs;
-    settings.showSettings = !settings.showSettings
-    if(vue.showLogs) {
-        setTimeout(function() {
-            hljs.initHighlighting.called = false;
-            hljs.initHighlighting();
-        }, 0);
-    }
+    sharedState.showLogs = !sharedState.showLogs;
 }
 
 function restoreSettings(data) {
@@ -251,15 +79,14 @@ function restoreSettings(data) {
 function saveSettings() {
 
     var model = {
-        enableLogging: settings.enableLogging,
-        expandJson: settings.expandJson,
-        showNamespace: settings.showNamespace,
-        clearLogsAutomatically: settings.clearLogsAutomatically,
-        showTimestamp: settings.showTimestamp,
-        autoscrollToLatestLog: settings.autoscrollToLatestLog,
-        prependLogs: settings.prependLogs,
-        selectedLogLevel: settings.selectedLogLevel,
-        maxLogs: parseInt(settings.maxLogs)
+        expandJson: sharedState.settings.expandJson,
+        showNamespace: sharedState.settings.showNamespace,
+        showLogLevel: sharedState.settings.showLogLevel,
+        showTimestamp: sharedState.settings.showTimestamp,
+        prependLogs: sharedState.settings.prependLogs,
+        selectedLogLevel: sharedState.settings.selectedLogLevel,
+        selectedDateFormat: sharedState.settings.selectedDateFormat,
+        maxLogs: parseInt(sharedState.settings.maxLogs)
     };
 
     try {
@@ -272,6 +99,7 @@ function saveSettings() {
     }
     catch(e) {
         console.error(e);
+        showSettings();
     }
     console.log('saved settings', model);
 }
@@ -280,10 +108,9 @@ function saveSettings() {
 $(window).scroll(function() {
    if($(window).scrollTop() + $(window).height() == $(document).height()) {
        //alert("bottom!");
-       state.scrollbarAtBottom = true;
+       sharedState.scrollbarAtBottom = true;
    }
    else {
-       state.scrollbarAtBottom = false;       
+       sharedState.scrollbarAtBottom = false;       
    }
-   //console.log(state.scrollbarAtBottom);
 });

@@ -20,14 +20,26 @@
   <body>
     <div id="vue">
 
+      <!-- Dropdown Structure -->
+      <ul id="dropdown1" class="dropdown-content">
+        <li v-for="option in sharedState.logLevels">
+          <a :data-value="option.value" class="selectable-level">{{option.text}}</a>
+        </li>
+      </ul>
+
       <div class="navbar-fixed">
         <nav>
           <div class="nav-wrapper">
             
-            <a class="brand-logo">{{title}}</a>
+            <!--<a class="brand-logo">{{title}}</a>-->
           
             <ul class="right">
-              <!--<li><a><span class="badge">4</span></a></li>-->
+              <!-- Dropdown Trigger -->
+              <li><a class="dropdown-button" href="#!" data-activates="dropdown1">{{activeLogLevel.text}}<i class="material-icons right">arrow_drop_down</i></a></li>
+              <li class="log-count">
+                <a class="waves-effect waves-light btn">{{filteredLogs.length}}</a>
+                <!--<a><span class="badge"></span></a>-->
+                </li>
               <li>
                 <a id="clear-logs">
                   <i class="material-icons left">not_interested</i>
@@ -44,9 +56,9 @@
         </nav>
       </div>
 
-      <div id="logs" v-if="showLogs">
+      <div id="logs" v-show="sharedState.showLogs">
 
-        <div v-for="item in logs" class="log-item">
+        <div v-for="item in filteredLogs" class="log-item">
 
           <div class="row">
             <div class="col s12 m6">
@@ -56,23 +68,26 @@
               </span>
             </div>
             <div class="col s12 m6 right-align">
-              <span class="date">{{item.date}}</span>
+              <span v-if="sharedState.settings.showTimestamp && sharedState.settings.selectedDateFormat === 1" class="date">{{item.date}}</span>
+              <span v-if="sharedState.settings.showTimestamp && sharedState.settings.selectedDateFormat === 2" class="date">{{item.dateIso}}</span>
             </div>
           </div>
 
           <div v-if="item.data" class="row code-wrap">
             <div class="col s12">
-              <pre><code class="json">{{item.data}}</code></pre>
+              <!--<a v-show="!sharedState.settings.expandJson" class="waves-effect waves-light"><i class="material-icons left">code</i>Show Json</a>-->
+
+              <pre v-show="sharedState.settings.expandJson"><code class="json">{{item.data}}</code></pre>
             </div>
           </div>
 
           <div class="row chips-wrap">
             <div class="col s12 m6 truncate">
-              <div class="chip">
+              <div v-if="sharedState.settings.showNamespace" class="chip">
                 {{item.namespace}}
               </div>
 
-              <div class="chip" :class="item.levelLabel.text">
+              <div v-if="sharedState.settings.showLogLevel" class="chip" :class="item.levelLabel.text">
                 {{item.levelLabel.text}}
               </div>
 
@@ -87,55 +102,67 @@
 
 
     <!-- Modal Structure -->
-    <div v-if="showSettings" id="settings">
+    <div v-show="!sharedState.showLogs" id="settings">
       <div class="modal-content">
         <!--<h4>Configure Monitor</h4>-->
         <form>
           <p>
-            <input v-model="expandJson"  type="checkbox" id="expandJson" />
-            <label for="expandJson">Expand JSON data By Default</label>
+            <input v-model="sharedState.settings.expandJson"  type="checkbox" id="expandJson" />
+            <label for="expandJson">Show Log Payload (JSON data)</label>
           </p>
           <p>
-            <input v-model="showNamespace" type="checkbox" id="showNamespace" />
+            <input v-model="sharedState.settings.showNamespace" type="checkbox" id="showNamespace" />
             <label for="showNamespace">Show Namespace</label>
           </p>
           <p>
-            <input v-model="clearLogsAutomatically" type="checkbox" id="clearAutomatically" />
-            <label for="clearAutomatically">Clear logs automatically</label>
+            <input v-model="sharedState.settings.showLogLevel" type="checkbox" id="showLogLevel" />
+            <label for="showLogLevel">Show Log Level</label>
           </p>
           <p>
-            <input v-model="showTimestamp" type="checkbox" id="showTimestamp" />
+            <input v-model="sharedState.settings.showTimestamp" type="checkbox" id="showTimestamp" />
             <label for="showTimestamp">Show Timestamp</label>
           </p>
+          
           <p>
-            <input v-model="autoscrollToLatestLog" type="checkbox" id="autoScroll" />
-            <label for="autoScroll">Autoscroll to latest log</label>
-          </p>
-          <p>
-            <input v-model="prependLogs" type="checkbox" id="prependLogs" />
+            <input v-model="sharedState.settings.prependLogs" type="checkbox" id="prependLogs" />
             <label for="prependLogs">Prepend logs</label>
           </p>
+          
           <p>Log Level</p>
           <p class="subtext">Only show the this level and above.</p>
           <div class="input-field col s12">
             <div class="row">
-              <div class="col s6 m3" v-for="option in logLevels">
-                <input v-model="selectedLogLevel" :value="option.value" name="loglevel" type="radio" :id="option.text" />
+              <div class="col s6 m3" v-for="option in sharedState.logLevels">
+                <input v-model="sharedState.settings.selectedLogLevel" :value="option.value" name="loglevel" type="radio" :id="option.text" />
                 <label :for="option.text">{{option.text}}</label>
               </div>
             </div>
           </div>
-          <p>Maximum Amount of Logs</p>
+
+          <p>Date Format</p>
+          <p class="subtext">Format of the Log Timestamp</p>
+          <div class="input-field col s12">
+            <div class="row">
+              <div class="col s12" v-for="option in sharedState.dateFormats">
+                <input v-model="sharedState.settings.selectedDateFormat" :value="option.value" name="dateFormats" type="radio" :id="option.id" />
+                <label :for="option.id">{{option.text}}</label>
+              </div>
+            </div>
+          </div>
+
+          <!--<p>Maximum Amount of Logs</p>
           <p class="subtext">How many logs to show before being removed.</p>
-          <p class="subtext">Current: {{ maxLogs }}</p>
+          <p class="subtext">Current: {{ sharedState.settings.maxLogs }}</p>
           <p class="range-field">
-            <input v-model="maxLogs" step="5" type="range" id="test5" min="5" max="100" />
-          </p>
+            <input v-model="sharedState.settings.maxLogs" step="5" type="range" id="test5" min="5" max="100" />
+          </p>-->
         </form>
+        <br>
         <button id="btn-save" class="modal-action modal-close waves-effect waves-green-lighten-1 btn green ">Save</button>
       </div>
     </div>
 
+    <script src="shared-state.js"></script>
     <script src="log-viewer.js"></script>
 </html>
 
