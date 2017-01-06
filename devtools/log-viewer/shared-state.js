@@ -96,7 +96,7 @@ function purge() {
 
 function addLog(log) {
 
-    //console.log('ADD_LOG FUNC CALLED', log);
+    console.log('ADD_LOG FUNC CALLED', log);
 
     log.date = moment().format(dateFormats[0].format);
     log.dateIso = moment().format();
@@ -142,32 +142,32 @@ function addLog(log) {
 
 // initial setup for debugging purposes
 
-for(var i = 1; i <=6; i++) {
-    addLog({
-        message: 'Test message '+i,
-        namespace: 'LandingPage:'+i,
-        level: i,
-        data: {
-            number: i,
-        }
-    });
-}
+// for(var i = 1; i <=6; i++) {
+//     addLog({
+//         message: 'Test message '+i,
+//         namespace: 'LandingPage:'+i,
+//         level: i,
+//         data: {
+//             number: i,
+//         }
+//     });
+// }
 
-var INTERVAL = 2000;
+// var INTERVAL = 2000;
 
-setInterval(function() {
-    var randomLevel = Math.floor(Math.random() * (6 - 1) + 1);
-    addLog({
-        level: randomLevel,
-        message: 'A crazy message right here',
-        data: {
-            hello: 'world',
-            test: 234234234,
-            a: null,
-            b: {
-                c: []
-            }
-        },
-        namespace: 'Some:Cool:Namespace'
-    })
-}, INTERVAL);
+// setInterval(function() {
+//     var randomLevel = Math.floor(Math.random() * (6 - 1) + 1);
+//     addLog({
+//         level: randomLevel,
+//         message: 'A crazy message right here',
+//         data: {
+//             hello: 'world',
+//             test: 234234234,
+//             a: null,
+//             b: {
+//                 c: []
+//             }
+//         },
+//         namespace: 'Some:Cool:Namespace'
+//     })
+// }, INTERVAL);

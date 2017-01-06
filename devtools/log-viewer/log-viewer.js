@@ -45,6 +45,13 @@ var vue = new Vue({
     },
     computed: {
         filteredLogs: function() {
+            setTimeout(function() {
+                $('code').each(function(i, block) {
+                    if(!$(block).hasClass('hljs')) {
+                        hljs.highlightBlock(block);
+                    }
+                });
+            }, 0);            
             return sharedState.filteredLogs();
         },
         activeLogLevel: function() {
