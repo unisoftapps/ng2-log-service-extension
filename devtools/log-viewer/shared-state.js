@@ -39,10 +39,10 @@ var dateFormats = [
         value: 2,
         id: 'dateformat-iso'        
     }
-]
-
+];
 
 var sharedState = {
+    showLogs: true,
     firstTime: true,
     scrollbarAtBottom: false,
     logs: [],
@@ -53,7 +53,6 @@ var sharedState = {
         });
         return results;
     },
-    showLogs: true,
     dateFormats: dateFormats,
     logLevels: levels,
     settings: {
@@ -64,10 +63,21 @@ var sharedState = {
         prependLogs: false,
         selectedLogLevel: 1,
         selectedDateFormat: 1,
-        maxLogs: 40
+        maxLogs: 50
     }
 };
 
+function purge() {
+    if(sharedState.logs.length >  sharedState.settings.maxLogs) {
+        if(sharedState.settings.prependLogs) {
+            // remove last item
+            sharedState.logs.pop();
+        }
+        else {
+            sharedState.logs.shift();
+        }
+    }
+}
 
 function addLog(log) {
 
@@ -92,6 +102,8 @@ function addLog(log) {
         sharedState.logs.push(log);
     }
 
+    purge();
+    
     setTimeout(function() {
 
         $('code').each(function(i, block) {
@@ -115,58 +127,23 @@ function addLog(log) {
 
 // initial setup for debugging purposes
 
-
-addLog({
-    message: 'Test message 1',
-    namespace: 'All',
-    level: 1,
-    data: {
-        title: 'Monitor',
-        test: [1,2,3],
-        nested: {
-            asdfasdf: 'adsfasdf',
-            test: [2,3, 'as']
+for(var i = 3; i <=6; i++) {
+    addLog({
+        message: 'Test message '+i,
+        namespace: 'LandingPage:'+i,
+        level: i,
+        data: {
+            number: i,
         }
-    }
-});
-
-addLog({
-    message: 'Test message 2',
-    namespace: 'Landing Page',
-    level: 2
-});
-
-addLog({
-    message: 'Test message 2',
-    namespace: 'Landing Page',
-    level: 3
-});
-
-addLog({
-    message: 'Test message 2',
-    namespace: 'Landing Page',
-    level: 4
-});
-
-addLog({
-    message: 'Test message 2',
-    namespace: 'Landing Page',
-    level: 5
-});
-
-
-addLog({
-    message: 'O Crap',
-    namespace: 'Landing Page',
-    level: 6
-});
-
+    });
+}
 
 var INTERVAL = 2000;
 
 setInterval(function() {
+    var randomLevel = Math.floor(Math.random() * (6 - 1) + 1);
     addLog({
-        level: 2,
+        level: randomLevel,
         message: 'A crazy message right here',
         data: {
             hello: 'world',

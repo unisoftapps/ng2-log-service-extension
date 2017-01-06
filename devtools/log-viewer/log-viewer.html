@@ -150,6 +150,12 @@
             </div>
           </div>
 
+          <p>Maximum Amount of Logs</p>
+          <p class="subtext">When any new logs are added above this amount, it will remove the oldest log.</p>
+          <p class="range-field">
+            <input v-model="sharedState.settings.maxLogs" step="5" type="range" id="test5" min="5" max="100" />
+          </p>
+
           <!--<p>Maximum Amount of Logs</p>
           <p class="subtext">How many logs to show before being removed.</p>
           <p class="subtext">Current: {{ sharedState.settings.maxLogs }}</p>
