@@ -33,7 +33,14 @@
             
             <!--<a class="brand-logo">{{title}}</a>-->
           
-            <ul class="right">
+            <ul class="left">
+              <li>
+                <div class="input-field">
+                  <input v-model="searchValue" id="search" type="search">
+                  <label for="search"><i class="material-icons">search</i></label>
+                  <!--<i class="material-icons close-filter">close</i>-->
+                </div>
+              </li>
               <!-- Dropdown Trigger -->
               <li><a class="dropdown-button" href="#!" data-activates="dropdown1">{{activeLogLevel.text}}<i class="material-icons right">arrow_drop_down</i></a></li>
               <li class="log-count">
@@ -55,6 +62,8 @@
           </div>
         </nav>
       </div>
+
+      
 
       <div id="logs" v-show="sharedState.showLogs">
 

@@ -2,6 +2,27 @@ $(document).ready(function() {
     $(".dropdown-button").dropdown();
 });
 
+$('body').on('click', '.close-filter', function() {
+    sharedState.filterValue = null;
+    vue.searchValue = null;    
+});
+
+$('body').on('keyup', '#search', function() {
+
+    if(sharedState.filterTimeout) {
+        clearTimeout(sharedState.filterTimeout);
+    }
+
+    sharedState.filterTimeout = setTimeout(function() {
+        sharedState.filterValue = vue.searchValue.trim();
+        if(sharedState.filterValue === '') {
+            sharedState.filterValue = null;
+        }
+        //console.log(sharedState.filterValue);
+    }, sharedState.filterDelay);
+
+});
+
 $('body').on('click', '#show-settings', showSettings);
 $('body').on('click', '#btn-save', saveSettings);
 $('body').on('change', '#log-level-box', changedLogLevel);
@@ -19,7 +40,8 @@ var vue = new Vue({
     el: '#vue',
     data: {
         sharedState: sharedState,
-        title: 'monitor'
+        title: 'monitor',
+        searchValue: null
     },
     computed: {
         filteredLogs: function() {
@@ -42,11 +64,6 @@ var settings = new Vue({
         sharedState: sharedState
     }
 });
-
-
-
-
-
 
 function changedLogLevel(e) {
     settings.selectedLogLevel = parseInt(e.value);

@@ -46,11 +46,26 @@ var sharedState = {
     firstTime: true,
     scrollbarAtBottom: false,
     logs: [],
+    filterDelay: 250,
+    filterTimeout: null,
+    filterValue: null,
     filteredLogs: function() {
+        
         var selectedLogLevel = this.settings.selectedLogLevel;
+        var filterValue = this.filterValue;
+
+        if(filterValue) {
+            var regex = new RegExp(filterValue, 'gi');
+        }
+
         var results = this.logs.filter(function(log) {
-            return (log.level >= selectedLogLevel);
+            var matchLogLevel = (log.level >= selectedLogLevel);
+            if(!filterValue) {
+                return matchLogLevel;
+            }
+            return (matchLogLevel && regex.test(log.namespace));
         });
+
         return results;
     },
     dateFormats: dateFormats,
@@ -127,7 +142,7 @@ function addLog(log) {
 
 // initial setup for debugging purposes
 
-for(var i = 3; i <=6; i++) {
+for(var i = 1; i <=6; i++) {
     addLog({
         message: 'Test message '+i,
         namespace: 'LandingPage:'+i,
