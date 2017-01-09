@@ -1,4 +1,4 @@
-console.info('monitoring...');
+//console.info('monitoring...');
 
 
 window.addEventListener('logMonitorEvent', function(e) {
